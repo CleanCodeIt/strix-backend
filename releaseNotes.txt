@@ -1,0 +1,27 @@
+# Strix Backend Release Notes
+
+## Version 1.1.0 (May 6, 2025)
+
+### Features
+- Added GitHub Actions automated deployment workflow
+- Implemented FTP deployment functionality
+- Added automatic GitHub release creation based on version in commit messages
+- Configured build artifact packaging for releases
+
+### Technical Notes
+- GitHub Actions workflow triggers only on specific commit message format: `DEPLOY {version}: {commitMessage}`
+- Secured FTP credentials and server information using GitHub Secrets
+- Integrated build artifacts with GitHub Releases
+
+## Version 1.0.0 (May 6, 2025)
+
+### Features
+- Initial project setup with Express.js
+- Implemented Hello World GET route at /hello
+- Added Swagger API documentation at /api-docs
+- Configured development environment with nodemon for auto-reload
+
+### Technical Notes
+- Following functional programming principles
+- Implemented proper error handling with try/catch blocks
+- API documentation compliant with OpenAPI 3.0.0 specification

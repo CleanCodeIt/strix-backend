@@ -1,0 +1,80 @@
+name: Deployment Workflow
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  check-commit-message:
+    runs-on: ubuntu-latest
+    outputs:
+      should-deploy: ${{ steps.check-message.outputs.deploy }}
+      version: ${{ steps.check-message.outputs.version }}
+      commit-message: ${{ steps.check-message.outputs.commit_message }}
+    steps:
+      - name: Check commit message format
+        id: check-message
+        run: |
+          commit_message="${{ github.event.head_commit.message }}"
+          if [[ $commit_message =~ ^DEPLOY[[:space:]]+([^:]+):[[:space:]]+(.+)$ ]]; then
+            echo "deploy=true" >> $GITHUB_OUTPUT
+            echo "version=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+            echo "commit_message=${BASH_REMATCH[2]}" >> $GITHUB_OUTPUT
+          else
+            echo "deploy=false" >> $GITHUB_OUTPUT
+          fi
+
+  build-and-deploy:
+    needs: check-commit-message
+    if: needs.check-commit-message.outputs.should-deploy == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+        
+      - name: Create build artifact
+        run: |
+          mkdir -p build-artifact
+          cp -r dist/* build-artifact/ || cp -r build/* build-artifact/ || echo "Using current directory structure"
+          zip -r build.zip build-artifact
+
+      - name: Deploy to FTP server
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT }}
+          local-dir: ./build-artifact/
+          server-dir: ${{ secrets.FTP_FOLDER_LOCATION }}
+      
+      - name: Read release notes
+        id: release-notes
+        run: |
+          RELEASE_NOTES=$(cat releaseNotes.txt)
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          echo "$RELEASE_NOTES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.check-commit-message.outputs.version }}
+          name: "Release ${{ needs.check-commit-message.outputs.version }}"
+          body: ${{ env.RELEASE_NOTES }}
+          files: build.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
