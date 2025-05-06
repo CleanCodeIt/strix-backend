@@ -8,6 +8,7 @@ A Node.js Express backend application for Strix.
 - Swagger API documentation: Interactive API documentation
 - Automated deployment workflow via GitHub Actions
 - Build system with Babel for modern JavaScript
+- Dynamic Swagger configuration that adapts to deployment environment
 
 ## Getting Started
 
@@ -49,7 +50,11 @@ The server will be available at: http://localhost:3000
 
 ## API Documentation
 
-Swagger API documentation is available at: http://localhost:3000/api-docs
+Swagger API documentation is available at: 
+- Development: http://localhost:3000/api-docs
+- Production: {deployedServerURL}/api-docs
+
+The Swagger UI automatically detects the correct server URL based on the environment.
 
 ### Available Endpoints
 

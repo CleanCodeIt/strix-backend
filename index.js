@@ -11,6 +11,7 @@ const cors = require('cors');
 // Constants
 const PORT = process.env.PORT ?? 3000;
 const HOST = process.env.HOST ?? 'localhost';
+const NODE_ENV = process.env.NODE_ENV ?? 'development';
 
 // Initialize Express app
 const app = express();
@@ -32,15 +33,28 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: `http://${HOST}:${PORT}`,
-      },
+        url: NODE_ENV === 'production' 
+          ? '{serverUrl}' // This will be replaced with the actual URL by Swagger UI
+          : `http://${HOST}:${PORT}`,
+        description: NODE_ENV === 'production' ? 'Production server' : 'Development server',
+        variables: {
+          serverUrl: {
+            default: NODE_ENV === 'production' ? '' : `http://${HOST}:${PORT}`,
+            description: 'The server URL'
+          }
+        }
+      }
     ],
   },
   apis: ['./index.js'], // Path to the API docs
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, {
+  swaggerOptions: {
+    serverSelector: true,
+  }
+}));
 
 /**
  * @swagger

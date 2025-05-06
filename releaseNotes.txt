@@ -1,5 +1,17 @@
 # Strix Backend Release Notes
 
+## Version 1.2.1 (May 6, 2025)
+
+### Features
+- Fixed Swagger configuration to support dynamic server URLs instead of hardcoded localhost
+- Added environment detection for proper Swagger documentation in production deployments
+- Implemented server selector in Swagger UI for better environment handling
+
+### Technical Notes
+- Now using NODE_ENV to detect environment and adjust Swagger URLs accordingly
+- Added server variables in Swagger configuration for better URL handling
+- Fixed issue with Swagger showing http://localhost:3000 URLs in production deployment
+
 ## Version 1.2.0 (May 6, 2025)
 
 ### Features
