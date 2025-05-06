@@ -59,10 +59,10 @@ jobs:
 
       - name: Prepare for deployment
         run: |
-          mkdir -p build-artifact
-          cp -r package.json package-lock.json dist/ build-artifact/
+          # Copy package files into the dist directory
+          cp -r package.json package-lock.json dist/
           # Create zip for release
-          zip -r build.zip build-artifact
+          zip -r build.zip dist
 
       - name: Deploy to FTP server
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -71,8 +71,9 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: ${{ secrets.FTP_PORT }}
-          local-dir: ./build-artifact/
+          local-dir: ./dist/
           server-dir: ${{ secrets.FTP_FOLDER_LOCATION }}
+          dangerous-clean-slate: false
       
       - name: Read release notes
         id: release-notes
@@ -89,4 +90,5 @@ jobs:
           name: "Release ${{ needs.check-commit-message.outputs.version }}"
           body: ${{ env.RELEASE_NOTES }}
           files: build.zip
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_GITHUB_TOKEN }}
+          permissions: write-all
