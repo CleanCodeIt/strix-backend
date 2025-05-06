@@ -4,6 +4,8 @@ A Node.js Express backend application for Strix.
 
 ## Features
 
+- User authentication with JWT tokens and role-based access control
+- Admin user functionality with the first registered user becoming admin
 - Hello World API endpoint: Returns a simple greeting message
 - Swagger API documentation: Interactive API documentation
 - Automated deployment workflow via GitHub Actions
@@ -11,6 +13,7 @@ A Node.js Express backend application for Strix.
 - Dynamic Swagger configuration that adapts to deployment environment
 - PostgreSQL database integration with automatic migrations
 - Environment variable configuration
+- Licitations management: Create, read, update, and delete licitations with customizable price type selection
 
 ## Getting Started
 
@@ -98,6 +101,221 @@ Swagger API documentation is available at:
 The Swagger UI automatically detects the correct server URL based on the environment.
 
 ### Available Endpoints
+
+#### Authentication
+
+- **Register User**
+  - **URL**: `/api/auth/register`
+  - **Method**: `POST`
+  - **Description**: Register a new user (first user becomes admin)
+  - **Request Body**:
+    ```json
+    {
+      "username": "johndoe",
+      "email": "john.doe@example.com",
+      "password": "securePassword123"
+    }
+    ```
+  - **Response (Success)**:
+    ```json
+    {
+      "status": "success",
+      "message": "User registered successfully",
+      "token": "jwt-token-here",
+      "user": {
+        "id": 1,
+        "username": "johndoe",
+        "email": "john.doe@example.com",
+        "isAdmin": true
+      }
+    }
+    ```
+
+- **Login User**
+  - **URL**: `/api/auth/login`
+  - **Method**: `POST`
+  - **Description**: Authenticate a user and get JWT token
+  - **Request Body**:
+    ```json
+    {
+      "email": "john.doe@example.com",
+      "password": "securePassword123"
+    }
+    ```
+  - **Response (Success)**:
+    ```json
+    {
+      "status": "success",
+      "message": "Login successful",
+      "token": "jwt-token-here",
+      "user": {
+        "id": 1,
+        "username": "johndoe",
+        "email": "john.doe@example.com",
+        "isAdmin": true
+      }
+    }
+    ```
+
+- **Get Current User**
+  - **URL**: `/api/auth/me`
+  - **Method**: `GET`
+  - **Description**: Get information about the currently authenticated user
+  - **Headers**: 
+    ```
+    Authorization: Bearer jwt-token-here
+    ```
+  - **Response (Success)**:
+    ```json
+    {
+      "status": "success",
+      "user": {
+        "id": 1,
+        "username": "johndoe",
+        "email": "john.doe@example.com",
+        "isAdmin": true
+      }
+    }
+    ```
+
+#### Licitations
+
+- **Get All Licitations**
+  - **URL**: `/api/licitations`
+  - **Method**: `GET`
+  - **Description**: Get a list of all licitations
+  - **Response (Success)**:
+    ```json
+    {
+      "status": "success",
+      "data": [
+        {
+          "id": 1,
+          "title": "Office Supplies",
+          "description": "Looking for office supplies for our company",
+          "startDate": "2025-05-10T10:00:00.000Z",
+          "endDate": "2025-05-20T10:00:00.000Z",
+          "isLowestPrice": true,
+          "userId": 1,
+          "createdAt": "2025-05-06T12:30:45.000Z",
+          "updatedAt": "2025-05-06T12:30:45.000Z",
+          "creator": {
+            "id": 1,
+            "username": "johndoe",
+            "email": "john.doe@example.com"
+          }
+        }
+      ]
+    }
+    ```
+
+- **Get Licitation by ID**
+  - **URL**: `/api/licitations/:id`
+  - **Method**: `GET`
+  - **Description**: Get details of a specific licitation
+  - **Response (Success)**:
+    ```json
+    {
+      "status": "success",
+      "data": {
+        "id": 1,
+        "title": "Office Supplies",
+        "description": "Looking for office supplies for our company",
+        "startDate": "2025-05-10T10:00:00.000Z",
+        "endDate": "2025-05-20T10:00:00.000Z",
+        "isLowestPrice": true,
+        "userId": 1,
+        "createdAt": "2025-05-06T12:30:45.000Z",
+        "updatedAt": "2025-05-06T12:30:45.000Z",
+        "creator": {
+          "id": 1,
+          "username": "johndoe",
+          "email": "john.doe@example.com"
+        }
+      }
+    }
+    ```
+
+- **Create Licitation**
+  - **URL**: `/api/licitations`
+  - **Method**: `POST`
+  - **Description**: Create a new licitation
+  - **Authentication**: Required
+  - **Request Body**:
+    ```json
+    {
+      "title": "Office Supplies",
+      "description": "Looking for office supplies for our company",
+      "startDate": "2025-05-10T10:00:00.000Z",
+      "endDate": "2025-05-20T10:00:00.000Z",
+      "isLowestPrice": true
+    }
+    ```
+  - **Response (Success)**:
+    ```json
+    {
+      "status": "success",
+      "message": "Licitation created successfully",
+      "data": {
+        "id": 1,
+        "title": "Office Supplies",
+        "description": "Looking for office supplies for our company",
+        "startDate": "2025-05-10T10:00:00.000Z",
+        "endDate": "2025-05-20T10:00:00.000Z",
+        "isLowestPrice": true,
+        "userId": 1,
+        "createdAt": "2025-05-06T12:30:45.000Z",
+        "updatedAt": "2025-05-06T12:30:45.000Z"
+      }
+    }
+    ```
+
+- **Update Licitation**
+  - **URL**: `/api/licitations/:id`
+  - **Method**: `PUT`
+  - **Description**: Update an existing licitation
+  - **Authentication**: Required
+  - **Request Body**:
+    ```json
+    {
+      "title": "Updated Office Supplies",
+      "description": "Updated description for office supplies",
+      "startDate": "2025-05-12T10:00:00.000Z",
+      "endDate": "2025-05-25T10:00:00.000Z",
+      "isLowestPrice": false
+    }
+    ```
+  - **Response (Success)**:
+    ```json
+    {
+      "status": "success",
+      "message": "Licitation updated successfully",
+      "data": {
+        "id": 1,
+        "title": "Updated Office Supplies",
+        "description": "Updated description for office supplies",
+        "startDate": "2025-05-12T10:00:00.000Z",
+        "endDate": "2025-05-25T10:00:00.000Z",
+        "isLowestPrice": false,
+        "userId": 1,
+        "createdAt": "2025-05-06T12:30:45.000Z",
+        "updatedAt": "2025-05-06T13:45:22.000Z"
+      }
+    }
+    ```
+
+- **Delete Licitation**
+  - **URL**: `/api/licitations/:id`
+  - **Method**: `DELETE`
+  - **Description**: Delete an existing licitation
+  - **Authentication**: Required
+  - **Response (Success)**:
+    ```json
+    {
+      "status": "success",
+      "message": "Licitation deleted successfully"
+    }
+    ```
 
 #### Hello World
 

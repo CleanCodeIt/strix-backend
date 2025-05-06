@@ -1,5 +1,51 @@
 # Strix Backend Release Notes
 
+## Version 1.5.0 (May 6, 2025)
+
+### Features
+- Added complete licitation management system with CRUD operations
+- Implemented Licitation model with title, description, start/end dates, and price type preference
+- Created secure routes with authentication requirements for creating, updating, and deleting licitations
+- Added comprehensive Swagger documentation for all licitation endpoints
+- Implemented data validation for licitations (e.g., end date must be after start date)
+- Added relationship between User and Licitation models
+
+### Technical Notes
+- Using Sequelize ORM for database interactions and relationships
+- Added authentication middleware for protected licitation operations
+- Implemented proper error handling and validation for all licitation operations
+- Created comprehensive Swagger documentation with request/response examples
+- Followed functional programming principles with immutable data patterns
+
+## Version 1.4.1 (May 6, 2025)
+
+### Fixes
+- Fixed user registration error caused by improperly imported Sequelize operators
+- Enhanced error handling during registration process with more descriptive error messages
+- Implemented consistent usage of Sequelize Op object throughout auth routes
+
+### Technical Notes
+- Properly imported Sequelize Op object for complex database queries
+- Added detailed error reporting for better debugging and user experience
+- Improved error handling for Sequelize validation and unique constraint errors
+
+## Version 1.4.0 (May 6, 2025)
+
+### Features
+- Implemented complete user authentication system with JWT tokens
+- Added user registration endpoint with automatic admin role for first user
+- Created login endpoint with secure password handling
+- Added protected routes using authentication middleware
+- Implemented role-based access control (admin vs regular users)
+- Enhanced User model with isAdmin field
+
+### Technical Notes
+- Using bcryptjs for secure password hashing
+- JWT tokens for stateless authentication
+- Middleware for protecting routes and enforcing admin access
+- First registered user in the system automatically becomes admin
+- Added Swagger documentation for all authentication endpoints
+
 ## Version 1.3.0 (May 6, 2025)
 
 ### Features

@@ -11,6 +11,10 @@ require('dotenv').config();
 const { sequelize } = require('./models');
 const { runMigrations } = require('./config/migrations');
 
+// Import routes
+const authRoutes = require('./routes/auth');
+const licitationRoutes = require('./routes/licitations');
+
 // Constants
 const PORT = process.env.PORT ?? 3000;
 const HOST = process.env.HOST ?? 'localhost';
@@ -24,6 +28,10 @@ app.use(cors());
 
 // Add JSON body parser middleware
 app.use(express.json());
+
+// Register routes
+app.use('/api/auth', authRoutes);
+app.use('/api/licitations', licitationRoutes);
 
 // Swagger setup
 const swaggerOptions = {
@@ -48,6 +56,20 @@ const swaggerOptions = {
         }
       }
     ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT'
+        }
+      }
+    },
+    security: [
+      {
+        bearerAuth: []
+      }
+    ]
   },
   apis: ['./index.js', './routes/*.js'], // Path to the API docs
 };

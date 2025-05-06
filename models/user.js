@@ -34,6 +34,10 @@ module.exports = (sequelize, DataTypes) => {
     isActive: {
       type: DataTypes.BOOLEAN,
       defaultValue: true
+    },
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     }
   }, {
     tableName: 'users',
@@ -42,7 +46,11 @@ module.exports = (sequelize, DataTypes) => {
 
   // Model associations can be defined here
   User.associate = (models) => {
-    // Example: User.hasMany(models.Post);
+    // User has many licitations
+    User.hasMany(models.Licitation, {
+      foreignKey: 'userId',
+      as: 'licitations'
+    });
   };
 
   return User;
