@@ -6,6 +6,7 @@
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
+const cors = require('cors');
 
 // Constants
 const PORT = process.env.PORT ?? 3000;
@@ -13,6 +14,12 @@ const HOST = process.env.HOST ?? 'localhost';
 
 // Initialize Express app
 const app = express();
+
+// Enable CORS for all requests
+app.use(cors());
+
+// Add JSON body parser middleware
+app.use(express.json());
 
 // Swagger setup
 const swaggerOptions = {
