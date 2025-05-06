@@ -9,6 +9,8 @@ A Node.js Express backend application for Strix.
 - Automated deployment workflow via GitHub Actions
 - Build system with Babel for modern JavaScript
 - Dynamic Swagger configuration that adapts to deployment environment
+- PostgreSQL database integration with automatic migrations
+- Environment variable configuration
 
 ## Getting Started
 
@@ -16,6 +18,7 @@ A Node.js Express backend application for Strix.
 
 - Node.js (v14 or higher)
 - npm (v6 or higher)
+- PostgreSQL (v12 or higher)
 
 ### Installation
 
@@ -28,6 +31,24 @@ cd strix-backend
 
 # Install dependencies
 npm install
+
+# Set up environment variables
+# Copy the .env.example file to .env and update with your values
+copy .env.example .env
+```
+
+### Database Setup
+
+1. Create a PostgreSQL database for the project
+2. Update the .env file with your database credentials:
+
+```
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=strix_db
+DB_USER=postgres
+DB_PASSWORD=your_password
+DB_DIALECT=postgres
 ```
 
 ### Running the Application
@@ -48,6 +69,26 @@ npm run lint
 
 The server will be available at: http://localhost:3000
 
+### Database Commands
+
+```bash
+# Create a new migration (replace migration_name with your migration name)
+npm run migrate migration_name
+
+# Reset and run all migrations
+npm run migrate:reset
+
+# Seed the database with sample data
+npm run seed
+
+# Reset and run all seeders
+npm run seed:reset
+```
+
+## Automatic Migrations
+
+The application automatically runs pending migrations on startup. This ensures that your database schema is always up-to-date with the latest changes.
+
 ## API Documentation
 
 Swagger API documentation is available at: 
@@ -67,6 +108,26 @@ The Swagger UI automatically detects the correct server URL based on the environ
   ```json
   {
     "message": "Hello World!"
+  }
+  ```
+
+#### Database Status
+
+- **URL**: `/db-status`
+- **Method**: `GET`
+- **Description**: Checks the database connection status
+- **Response (Success)**:
+  ```json
+  {
+    "status": "success",
+    "message": "Database connection established successfully"
+  }
+  ```
+- **Response (Error)**:
+  ```json
+  {
+    "status": "error",
+    "message": "Failed to connect to database"
   }
   ```
 

@@ -7,6 +7,9 @@ const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
 const cors = require('cors');
+require('dotenv').config();
+const { sequelize } = require('./models');
+const { runMigrations } = require('./config/migrations');
 
 // Constants
 const PORT = process.env.PORT ?? 3000;
@@ -46,7 +49,7 @@ const swaggerOptions = {
       }
     ],
   },
-  apis: ['./index.js'], // Path to the API docs
+  apis: ['./index.js', './routes/*.js'], // Path to the API docs
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
@@ -83,9 +86,69 @@ app.get('/hello', (req, res) => {
   }
 });
 
-// Start the server
-const startServer = () => {
+/**
+ * @swagger
+ * /db-status:
+ *   get:
+ *     summary: Check database connection status
+ *     description: Verifies if the application can connect to the database
+ *     responses:
+ *       200:
+ *         description: Database connection successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Database connection established successfully
+ *       500:
+ *         description: Database connection failed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Failed to connect to database
+ */
+app.get('/db-status', async (req, res) => {
   try {
+    await sequelize.authenticate();
+    res.status(200).json({ 
+      status: 'success', 
+      message: 'Database connection established successfully' 
+    });
+  } catch (error) {
+    console.error('Database connection error:', error);
+    res.status(500).json({ 
+      status: 'error', 
+      message: 'Failed to connect to database' 
+    });
+  }
+});
+
+// Start the server
+const startServer = async () => {
+  try {
+    // Connect to the database
+    console.log('Connecting to the database...');
+    await sequelize.authenticate();
+    console.log('Database connection established successfully.');
+
+    // Run migrations
+    console.log('Running database migrations...');
+    await runMigrations();
+
+    // Start the Express server
     app.listen(PORT, () => {
       console.log(`Server running at http://${HOST}:${PORT}`);
       console.log(`Swagger documentation available at http://${HOST}:${PORT}/api-docs`);
