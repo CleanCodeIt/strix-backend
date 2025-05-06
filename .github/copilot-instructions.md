@@ -22,3 +22,4 @@
 - Backend must include Swagger
 - Every route or controller created must display data information in the swagger
 - For every new features implemented, add data in releaseNotes.txt.
+- For comandline commands keep in mind that i'm using Windows and Powershell

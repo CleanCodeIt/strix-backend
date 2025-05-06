@@ -43,13 +43,25 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build project
+      - name: Build application
         run: npm run build
         
-      - name: Create build artifact
+      - name: Remove node_modules and .github folders from dist
+        run: |
+          if [ -d "dist/node_modules" ]; then
+            echo "Removing node_modules folder from dist"
+            rm -rf dist/node_modules
+          fi
+          if [ -d "dist/.github" ]; then
+            echo "Removing .github folder from dist"
+            rm -rf dist/.github
+          fi
+
+      - name: Prepare for deployment
         run: |
           mkdir -p build-artifact
-          cp -r dist/* build-artifact/ || cp -r build/* build-artifact/ || echo "Using current directory structure"
+          cp -r package.json package-lock.json dist/ build-artifact/
+          # Create zip for release
           zip -r build.zip build-artifact
 
       - name: Deploy to FTP server

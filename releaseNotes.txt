@@ -1,5 +1,19 @@
 # Strix Backend Release Notes
 
+## Version 1.2.0 (May 6, 2025)
+
+### Features
+- Implemented proper build process with Babel
+- Added ESLint configuration for code quality enforcement
+- Created optimized production builds via npm run build
+- Updated GitHub Actions workflow to use the new build system
+
+### Technical Notes
+- Babel configured to target Node.js 18 environment
+- ESLint rules enforce functional programming patterns
+- Build process creates minified artifacts in the dist directory
+- Updated deployment workflow to leverage the new build process
+
 ## Version 1.1.0 (May 6, 2025)
 
 ### Features
